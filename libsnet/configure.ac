@@ -10,7 +10,13 @@ AC_CONFIG_SRCDIR([snet.c])
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CXX 
 AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET 
+AC_PROG_RANLIB
+
+LT_INIT()
 
 AC_CANONICAL_SYSTEM
 
@@ -23,21 +29,20 @@ CHECK_SASL
 CHECK_UNIVERSAL_BINARIES
 
 # Checks for header files.
-#AC_HEADER_STDC
-#AC_CHECK_HEADERS([fcntl.h inttypes.h netinet/in.h stdlib.h string.h sys/param.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h netinet/in.h stdlib.h string.h sys/param.h sys/time.h syslog.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-#AC_HEADER_TIME
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 
 # Checks for library functions.
-#AC_FUNC_MALLOC
-#AC_FUNC_REALLOC
-#AC_CHECK_FUNCS([gettimeofday select])
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([gettimeofday memmove select])
 
 # Checks for how to build libraries
 CHECK_PROFILED
 AC_DISABLE_SHARED
-AC_PROG_LIBTOOL  # Checks whether to build shared and/or static libraries
 
 # Miscellaneous:
 if test x_$GCC = x_yes; then

@@ -9,6 +9,8 @@ AC_CONFIG_HEADER([common/config.h])
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 
 AC_CANONICAL_HOST 
 
@@ -98,19 +100,18 @@ for i in $FILTERS; do
 done
 
 # Checks for header files.
-#AC_HEADER_STDC
-#AC_HEADER_SYS_WAIT
-#AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdlib.h string.h sys/file.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h utime.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h sys/file.h syslog.h sys/param.h sys/socket.h sys/time.h utime.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-#AC_C_CONST
-#AC_HEADER_TIME
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 
 # Checks for library functions.
-#AC_FUNC_FORK
-#AC_FUNC_MALLOC
-#AC_FUNC_UTIME_NULL
-#AC_CHECK_FUNCS([bzero dup2 gethostbyaddr gethostbyname gettimeofday inet_ntoa isascii memset select socket strcasecmp strchr strdup strerror strrchr strstr strtol utime])
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([dup2 gethostbyname gethostname gettimeofday inet_ntoa memmove memset regcomp select socket strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol utime])
 
 # Misc.
 if test x_$GCC = x_yes; then
