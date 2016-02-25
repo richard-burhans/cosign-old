@@ -263,14 +263,14 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
     lcgi_configure();
 
     if (( kerror = krb5_init_context( &kcontext ))) {
-	sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	sl[ SL_TITLE ].sl_data = "Authentication Required ( kerberos error )";
 	subfile( tmpl, sl, 0 );
 	exit( 0 );
     }
 
     if (( kerror = krb5_parse_name( kcontext, id, &kprinc ))) {
-	sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	sl[ SL_TITLE ].sl_data = "Authentication Required ( kerberos error )";
 	subfile( tmpl, sl, 0 );
 	exit( 0 );
@@ -279,7 +279,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
     /* need to get realm out */
     if ( realm == NULL || *realm == '\0' ) {
 	if (( kerror = krb5_get_default_realm( kcontext, &realm )) != 0 ) {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
  	    sl[ SL_TITLE ].sl_data = "Authentication Required "
 		    "( krb realm error )";
 	    subfile( tmpl, sl, 0 );
@@ -304,7 +304,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 	}
 
 	if (( kerror = krb5_cc_resolve( kcontext, krbpath, &kccache )) != 0 ) {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "Authentication Required (kerberos error)";
 	    subfile( tmpl, sl, 0 );
 	    exit( 0 );
@@ -325,10 +325,10 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 		( kerror == KRB5KDC_ERR_C_PRINCIPAL_UNKNOWN )) {
 	    return( COSIGN_CGI_ERROR );	/* draw login or reauth page */
         } else if ( kerror == KRB5KDC_ERR_KEY_EXP ) {
-	    *msg = (char *)error_message( kerror );
+	    *msg = (char *)krb5_get_error_message( kcontext, kerror );
             return( COSIGN_CGI_PASSWORD_EXPIRED );
 	} else {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "Error";
 	    subfile( tmpl, sl, 0 );
 	    exit( 0 );
@@ -350,7 +350,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 	krb5_verify_init_creds_opt_set_ap_req_nofail( kvic_opts, 1 );
 
 	if (( kerror = krb5_kt_resolve( kcontext, ktbuf, &keytab )) != 0 ) {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "KT Resolve Error";
 	    subfile( tmpl, sl, 0 );
 	    exit( 0 );
@@ -363,7 +363,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 			KRB5_NT_SRV_HST, &sprinc );
 	}
 	if ( kerror != 0 ) {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "Server Principal Error";
 	    subfile( tmpl, sl, 0 );
 	    exit( 0 );
@@ -378,7 +378,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 	    } else {
 		fprintf( stderr, "ticket verify error for user %s", id );
 	    }
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "Ticket Verify Error";
 	    subfile( tmpl, sl, 0 );
 	    krb5_free_principal( kcontext, sprinc );
@@ -405,14 +405,14 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 
     if ( store_tickets ) {
 	if (( kerror = krb5_cc_initialize( kcontext, kccache, kprinc )) != 0 ) {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "CC Initialize Error";
 	    subfile( tmpl, sl, 0 );
 	    exit( 0 );
 	}
 	if (( kerror = krb5_cc_store_cred( kcontext, kccache, &kcreds ))
 		!= 0 ) {
-	    sl[ SL_ERROR ].sl_data = (char *)error_message( kerror );
+	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
 	    sl[ SL_TITLE ].sl_data = "CC Storing Error";
 	    subfile( tmpl, sl, 0 );
 	    exit( 0 );
