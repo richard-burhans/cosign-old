@@ -96,6 +96,7 @@ snet_open( path, flags, mode, max )
     char	*path;
     int		flags;
     int		mode;
+    int		max;
 {
     int		fd;
 
