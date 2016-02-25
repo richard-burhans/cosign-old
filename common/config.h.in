@@ -9,6 +9,10 @@
 /* Define to 1 to enable the apache filter to set up GSSAPI. */
 #undef GSS
 
+/* Define to 1 to use request_rec->useragent_ip instead of
+   conn_rec->remote_ip. */
+#undef HAVE_APACHE_USERAGENT_IP
+
 /* Define to 1 if you have the apache 2 ap_regex.h header file. */
 #undef HAVE_AP_REGEX_H
 
