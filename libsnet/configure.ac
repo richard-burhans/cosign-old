@@ -1,9 +1,9 @@
 # Process this file with autoconf to produce a configure script.
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_INIT(libsnet,VERSION,rsug@umich.edu) 
+AC_INIT([libsnet],[VERSION],[rsug@umich.edu]) 
 AC_CONFIG_HEADER(config.h)
-AC_PREREQ(2.52)
+AC_PREREQ([2.69])
 AC_COPYRIGHT([Copyright (c) 1995-2003 Regents of The University of Michigan.  All Rights Reserved.])
 AC_CONFIG_SRCDIR([snet.c])
 
@@ -16,9 +16,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET 
 AC_PROG_RANLIB
 
-LT_INIT()
-
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 # Checks for libraries.
 if test \! x_$with_ssl = x_no; then
@@ -43,6 +41,7 @@ AC_CHECK_FUNCS([gettimeofday memmove select])
 # Checks for how to build libraries
 CHECK_PROFILED
 AC_DISABLE_SHARED
+AC_PROG_LIBTOOL
 
 # Miscellaneous:
 if test x_$GCC = x_yes; then

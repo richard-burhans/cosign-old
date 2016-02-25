@@ -1,6 +1,6 @@
-AC_INIT(libcgi, VERSION, mprint@umich.edu)
-AC_PREREQ(2.53)
-AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [enables debug logging to standard out]), debug="-DEBUG", debug="" )
+AC_INIT([libcgi],[VERSION],[mprint@umich.edu])
+AC_PREREQ([2.69])
+AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug],[enables debug logging to standard out]), debug="-DEBUG", debug="" )
 AC_SUBST(debug)
 
 # Checks for programs.
