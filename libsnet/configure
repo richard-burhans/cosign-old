@@ -1495,6 +1495,13 @@ if test -n "$ac_init_help"; then
      short | recursive ) echo "Configuration of libsnet VERSION:";;
    esac
   cat <<\_ACEOF
+
+Optional Features:
+  --disable-option-checking  ignore unrecognized --enable/--with options
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-universal_binaries
+                          build universal binaries (default=no)
   --enable-profiled       build profiled libsnet (default=yes)
   --enable-shared=PKGS  build shared libraries default=no
   --enable-static=PKGS  build static libraries default=yes
@@ -4058,6 +4065,31 @@ fi
 
 $as_echo "#define HAVE_LIBSASL 1" >>confdefs.h
 
+	    LIBS="$LIBS -lsasl2";
+	    LDFLAGS="$LDFLAGS -L$sasldir/lib";
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	fi
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    fi
+
+
+    # Check whether --enable-universal_binaries was given.
+if test "${enable_universal_binaries+set}" = set; then :
+  enableval=$enable_universal_binaries;
+else
+  enable_universal_binaries=no
+fi
+
+    if test "${enable_universal_binaries}" = "yes"; then
+
+        case "${host_os}" in
+          darwin8*)
             macosx_sdk="MacOSX10.4u.sdk"
             ;;
 
@@ -5741,7 +5773,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5744 "configure"' > conftest.$ac_ext
+  echo '#line 5776 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -6227,7 +6259,7 @@ chmod -w .
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -o out/conftest2.$ac_objext"
 compiler_c_o=no
-if { (eval echo configure:6230: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
+if { (eval echo configure:6262: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
   if test -s out/conftest.err; then
@@ -7843,7 +7875,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7846 "configure"
+#line 7878 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7941,7 +7973,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7944 "configure"
+#line 7976 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
