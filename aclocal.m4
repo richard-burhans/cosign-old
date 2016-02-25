@@ -32,7 +32,7 @@ AC_DEFUN([CHECK_SSL],
     esac
 
     CPPFLAGS="$CPPFLAGS -I$ac_cv_path_ssl/include";
-    AC_DEFINE(HAVE_LIBSSL)
+    AC_DEFINE([HAVE_LIBSSL], [1], [Define to 1 if you have the `ssl' library (-lssl).])
     LIBS="$LIBS -lssl -lcrypto";
     LDFLAGS="$LDFLAGS -L$ac_cv_path_ssl/lib";
     AC_MSG_RESULT($ac_cv_path_ssl)
@@ -81,7 +81,7 @@ AC_DEFUN([CHECK_LIBKRB],
     AC_SUBST(KLIBS)
     KLDFLAGS="-L$ac_cv_path_krb/lib";
     AC_SUBST(KLDFLAGS)
-    AC_DEFINE(KRB)
+    AC_DEFINE([KRB], [1], [Define to 1 to enable kerberos for the cgi and apache filter.])
     AC_MSG_RESULT(Kerberos found at $ac_cv_path_krb)
 ])
 
@@ -110,19 +110,19 @@ AC_DEFUN([CHECK_APACHE2],
     fi
     APXS2_INCLUDEDIR="`${APXS2} -q INCLUDEDIR`"
     if test -f "$APXS2_INCLUDEDIR/ap_regex.h"; then
-	AC_DEFINE(HAVE_AP_REGEX_H)
+	AC_DEFINE([HAVE_AP_REGEX_H], [1], [Define to 1 if you have the apache 2 ap_regex.h header file.])
     fi
     APACHE2_MINOR_VERSION="`${APXS2_SBINDIR}/${APXS2_TARGET} -v | \
 	    sed -e '/^Server version:/!d' \
 	        -e 's/.*Apache\/2\.\(@<:@0-9@:>@\)\..*/\1/g'`"
     if test -n "${APACHE2_MINOR_VERSION}"; then
 	if test "${APACHE2_MINOR_VERSION}" -gt 0; then
-	    AC_DEFINE(HAVE_MOD_AUTHZ_HOST)
+	    AC_DEFINE([HAVE_MOD_AUTHZ_HOST], [1], [Define to 1 if the apache mod_authz_host module is present.])
 	fi
     fi
     AC_SUBST(APXS2)
     AC_SUBST(APACHECTL2)
-    AC_DEFINE(APACHE2)
+    AC_DEFINE([APACHE2], [1], [Define to 1 to enable the apache 2 filter.])
     AC_MSG_RESULT(apache 2 filter will be built)
 
 ])
@@ -139,7 +139,7 @@ AC_DEFUN([CHECK_GSS],
     AC_SUBST(GSSLIBS)
     GSSLDFLAGS="-L$ac_cv_path_krb/lib";
     AC_SUBST(GSSLDFLAGS)
-    AC_DEFINE(GSS)
+    AC_DEFINE([GSS], [1], [Define to 1 to enable the apache filter to set up GSSAPI.])
     AC_MSG_RESULT($ac_cv_path_krb)
 ])
 
@@ -168,7 +168,7 @@ AC_DEFUN([CHECK_APACHE_1],
     fi
     AC_SUBST(APXS)
     AC_SUBST(APACHECTL)
-    AC_DEFINE(APACHE1)
+    AC_DEFINE([APACHE1], [1], [Define to 1 to enable the apache 1.3 filter.])
     AC_MSG_RESULT(apache 1.3 filter will be built)
 
 ])
@@ -202,8 +202,8 @@ AC_DEFUN([CHECK_LIBMYSQL],
     AC_SUBST(MYSQLLIBS)
     MYSQLLDFLAGS="-L$ac_cv_path_mysql/lib/mysql -R$ac_cv_path_mysql/lib/mysql";
     AC_SUBST(MYSQLLDFLAGS)
-    AC_DEFINE(HAVE_MYSQL)
-    AC_DEFINE(SQL_FRIEND)
+    AC_DEFINE([HAVE_MYSQL], [1], [Define to 1 if you have the `mysqlclient' library (-lmysqlclient).])
+    AC_DEFINE([SQL_FRIEND], [1], [Define to 1 to enable mysql for guest login support in the cgi.])
     AC_MSG_RESULT($ac_cv_path_mysql)
 ])
 
@@ -284,7 +284,7 @@ AC_DEFUN([CHECK_LIGHTTPD],
     LIGHTTPD_COSIGN_SRCDIR=`pwd`
 
     AC_SUBST(LIGHTTPD_COSIGN_SRCDIR)
-    AC_DEFINE(HAVE_LIGHTTPD)
+    AC_DEFINE([HAVE_LIGHTTPD], [1], [Define to 1 to enable the lighttpd filter.])
     FILTERS="$FILTERS filters/lighttpd"
     AC_MSG_RESULT(lighttpd filter will be built)
 ])
