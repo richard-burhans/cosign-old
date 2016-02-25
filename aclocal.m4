@@ -70,16 +70,33 @@ AC_DEFUN([CHECK_LIBKRB],
 	    done
 	])
     fi
-    if test ! -e "$ac_cv_path_krb" ; then
+
+    if test -n "$KRB_CFLAGS"; then
+        KINC="$KRB_CFLAGS";
+    elif test -n "$krb_include"; then
+        KINC="-I$krb_include";
+    else
         AC_MSG_ERROR(cannot find krb libraries)
     fi
+
+    if test -n "$KRB_LDFLAGS"; then
+        KLDFLAGS="$KRB_LDFLAGS";
+    elif test -n "$ac_cv_path_krb"; then
+        KLDFLAGS="-L$ac_cv_path_krb/lib";
+    else
+        AC_MSG_ERROR(cannot find krb libraries)
+    fi
+
+    if test -n "$KRB_LIBS"; then
+        KLIBS="$KRB_LIBS";
+    else
+        KLIBS="-lkrb5 -lk5crypto -lcom_err";
+    fi
+
     KRBCGI="cosign.cgi"
     AC_SUBST(KRBCGI)
-    KINC="-I$krb_include";
     AC_SUBST(KINC)
-    KLIBS="-lkrb5 -lk5crypto -lcom_err";
     AC_SUBST(KLIBS)
-    KLDFLAGS="-L$ac_cv_path_krb/lib";
     AC_SUBST(KLDFLAGS)
     AC_DEFINE([KRB], [1], [Define to 1 to enable kerberos for the cgi and apache filter.])
     AC_MSG_RESULT(Kerberos found at $ac_cv_path_krb)
@@ -133,14 +150,31 @@ AC_DEFUN([CHECK_APACHE2],
 AC_DEFUN([CHECK_GSS],
 [
     AC_MSG_CHECKING(for gss)
-    if test ! -e "$ac_cv_path_krb" ; then
+
+    if test -n "$GSSAPI_CFLAGS"; then
+        GSSINC="$GSSAPI_CFLAGS";
+    elif test -n "$ac_cv_path_krb"; then
+        GSSINC="-I$ac_cv_path_krb/include";
+    else
         AC_MSG_ERROR(gss require krb5 libraries)
     fi
-    GSSINC="-I$ac_cv_path_krb/include";
+
+    if test -n "$GSSAPI_LDFLAGS"; then
+        GSSLDFLAGS="$GSSAPI_LDFLAGS";
+    elif test -n "$ac_cv_path_krb"; then
+        GSSLDFLAGS="-L$ac_cv_path_krb/lib";
+    else
+        AC_MSG_ERROR(cannot find krb libraries)
+    fi
+
+    if test -n "$GSSAPI_LIBS"; then
+        GSSLIBS="$GSSAPI_LIBS";
+    else
+        GSSLIBS="-lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err";
+    fi
+
     AC_SUBST(GSSINC)
-    GSSLIBS="-lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err";
     AC_SUBST(GSSLIBS)
-    GSSLDFLAGS="-L$ac_cv_path_krb/lib";
     AC_SUBST(GSSLDFLAGS)
     AC_DEFINE([GSS], [1], [Define to 1 to enable the apache filter to set up GSSAPI.])
     AC_MSG_RESULT($ac_cv_path_krb)

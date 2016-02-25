@@ -26,10 +26,18 @@ AC_ARG_ENABLE(lighttpd, AS_HELP_STRING([--enable-lighttpd=path_to_lighttpd],[ena
 
 AC_ARG_ENABLE(krb, AS_HELP_STRING([--enable-krb=path_to_krb],[enable kerberos for the cgi and apache filter]), CHECK_LIBKRB, AC_MSG_RESULT( kerberos not enabled))
 
+AC_ARG_VAR([KRB_CFLAGS], [kerberos CFLAGS])
+AC_ARG_VAR([KRB_LDFLAGS], [kerberos LDFLAGS])
+AC_ARG_VAR([KRB_LIBS], [kerberos LIBS])
+
 AC_ARG_ENABLE(mysql, AS_HELP_STRING([--enable-mysql=path_to_mysql],[enable mysql for guest login support in the cgi]), CHECK_LIBMYSQL, AC_MSG_RESULT( mysql not enabled))
 
 AC_ARG_WITH(gss, AS_HELP_STRING([--with-gss],[enable apache filter
 to set up GSSAPI ]), CHECK_GSS, AC_MSG_RESULT( GSSAPI not enabled))
+
+AC_ARG_VAR([GSSAPI_CFLAGS], [GSSAPI CFLAGS])
+AC_ARG_VAR([GSSAPI_LDFLAGS], [GSSAPI LDFLAGS])
+AC_ARG_VAR([GSSAPI_LIBS], [GSSAPI LIBS])
 
 AC_ARG_WITH(cosigndb, AS_HELP_STRING([--with-cosigndb=DIR],[default cosign database storage]), cosigndb="$withval", cosigndb="/var/cosign/daemon" )
 AC_SUBST(cosigndb)
