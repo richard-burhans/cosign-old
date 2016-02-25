@@ -278,7 +278,7 @@ main( int argc, char *argv[] )
     char			*data, *ip_addr, *tmpl = NULL, *server_name;
     char			*cookie = NULL, *method, *qs;
     char			*misc = NULL, *factor = NULL, *p, *r;
-    char			*require, *reqp;
+    char			*require, *reqp = NULL;
     char			*ref = NULL, *service = NULL, *login = NULL;
     char			*remote_user = NULL;
     char			*subject_dn = NULL, *issuer_dn = NULL;
