@@ -1,6 +1,7 @@
 ################## Some of this may need to be edited ##################
 
 prefix=@prefix@
+datarootdir=@datarootdir@
 exec_prefix=@exec_prefix@
 SBINDIR=@sbindir@
 MANDIR=@mandir@
