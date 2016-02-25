@@ -14,7 +14,6 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET 
-AC_PROG_RANLIB
 
 AC_CANONICAL_TARGET
 
@@ -41,7 +40,7 @@ AC_CHECK_FUNCS([gettimeofday memmove select])
 # Checks for how to build libraries
 CHECK_PROFILED
 AC_DISABLE_SHARED
-AC_PROG_LIBTOOL
+LT_INIT
 
 # Miscellaneous:
 if test x_$GCC = x_yes; then
