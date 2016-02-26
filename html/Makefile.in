@@ -20,11 +20,11 @@ install : all
 	    ${INSTALL} -m 0644 -c $$i ${DESTDIR}${HTMLDIR}/; \
 	done
 	-mkdir -p ${DESTDIR}${HTMLDIR}/images
-	cp images/*.gif ${DESTDIR}${HTMLDIR}/images/
-	cp images/*.png ${DESTDIR}${HTMLDIR}/images/
+	${INSTALL} -m 0644 images/*.gif ${DESTDIR}${HTMLDIR}/images/
+	${INSTALL} -m 0644 images/*.png ${DESTDIR}${HTMLDIR}/images/
 	-mkdir -p ${DESTDIR}${HTMLDIR}/js
-	cp js/*.js ${DESTDIR}${HTMLDIR}/js/
+	${INSTALL} -m 0644 js/*.js ${DESTDIR}${HTMLDIR}/js/
 	-mkdir -p ${DESTDIR}${SERVICESDIR}
-	cp services/*.html ${DESTDIR}${SERVICESDIR}/
+	${INSTALL} -m 0644 services/*.html ${DESTDIR}${SERVICESDIR}/
 
 clean:
