@@ -44,7 +44,7 @@ LT_INIT
 
 # Miscellaneous:
 if test x_$GCC = x_yes; then
-    OPTOPTS=${OPTOPTS:-"-Wall -Wmissing-prototypes"}
+    OPTOPTS=${OPTOPTS:-"-Wall -Wextra -Wmissing-prototypes"}
 fi
 AC_SUBST(OPTOPTS)
 

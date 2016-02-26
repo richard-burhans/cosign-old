@@ -259,6 +259,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
     char                        ktbuf[ MAX_KEYTAB_NAME_LEN + 1 ];
     char                        tmpkrb[ 16 ], krbpath [ MAXPATHLEN ];
     int				i;
+    int				snprintf_rc;
 
     lcgi_configure();
 
@@ -295,8 +296,8 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 	    exit( 0 );
 	}
 
-	if ( snprintf( krbpath, sizeof( krbpath ), "%s/%s",
-		ticket_path, tmpkrb ) >= sizeof( krbpath )) {
+	snprintf_rc = snprintf( krbpath, sizeof( krbpath ), "%s/%s", ticket_path, tmpkrb );
+	if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( krbpath )) {
 	    sl[ SL_ERROR ].sl_data = "An unknown error occurred.";
 	    sl[ SL_TITLE ].sl_data = "Authentication Required (krbpath error)";
 	    subfile( tmpl, sl, 0 );

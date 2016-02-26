@@ -3662,6 +3662,11 @@ fi
     fi
 
 
+# Miscellaneous:
+if test x_$GCC = x_yes; then
+    OPTOPTS=${OPTOPTS:-"-Wall -Wextra -Wmissing-prototypes"}
+fi
+
 
 ac_config_files="$ac_config_files Makefile"
 

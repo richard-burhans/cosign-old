@@ -26,6 +26,8 @@
 #include "cparse.h"
 #include "mkcookie.h"
 
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
 extern char		*cosign_version;
 extern char		*replhost;
 extern unsigned short	cosign_port;
@@ -131,6 +133,8 @@ pusherhosts( void )
     static void
 pusherhup( int sig )
 {
+    UNUSED(sig);
+
     reconfig++;
     return;
 }
@@ -138,8 +142,10 @@ pusherhup( int sig )
     static void
 pusherchld( int sig )
 {
-     childsig++;
-     return;
+    UNUSED(sig);
+
+    childsig++;
+    return;
 }
 
     void

@@ -89,7 +89,7 @@ mkcookie( int len, char *buf )
 
     len -= 3; /* XXX why? */
     randbytes = SZ_FBASE64_D( len );
-    if (( randbytes <= 0 ) || ( randbytes > sizeof( tmp ))) {
+    if (( randbytes <= 0 ) || ( (size_t) randbytes > sizeof( tmp ))) {
 	return( -1 );
     }
 

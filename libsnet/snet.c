@@ -731,6 +731,8 @@ snet_read( sn, buf, len, tv )
     struct timeval	*tv;
 {
     ssize_t		rc;
+    size_t		rc2;
+
 
     /*
      * If there's data already buffered, make sure it's not left over
@@ -738,10 +740,32 @@ snet_read( sn, buf, len, tv )
      * Note that snet_getline() calls snet_readread().
      */
     if ( snet_hasdata( sn )) {
-#ifndef min
-#define min(a,b)	(((a)<(b))?(a):(b))
-#endif /* min */
-	rc = min( sn->sn_rend - sn->sn_rcur, len );
+        /*  ### POTENTIAL BUG ###
+         *
+         *  It's likely that ssize_t (which is signed) will be smaller
+         *  than size_t (which is unsigned).
+         *
+         *  Instead of checking / fixing this everywhere, I'm just going
+         *  to put in a sanity check and exit if things are broken.
+         *
+         *  It's unlikely that this will ever get triggered.
+         *
+         *  ### POTENTIAL BUG ###
+         */
+
+        /* safe since snet_hasdata(sn) guarantees sn->sn_rcur < sn->sn_rend */
+        rc2 = (size_t) (sn->sn_rend - sn->sn_rcur);
+
+        if (len < rc2) {
+          rc2 = len;
+        }
+
+        if (rc2 > SSIZE_MAX) {
+            fprintf(stderr, "ERROR: snet_read: size_t value larger than SSIZE_MAX: %zu > %td\n", rc2, SSIZE_MAX);
+            exit(EXIT_FAILURE);
+        }
+
+        rc = (ssize_t) rc2;
 	memcpy( buf, sn->sn_rcur, rc );
 	sn->sn_rcur += rc;
 	return( rc );

@@ -39,6 +39,8 @@
 #include "argcargv.h"
 #include "wildcard.h"
 
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
 #ifndef MIN
 #define MIN(a,b)        ((a)<(b)?(a):(b))
 #endif
@@ -122,6 +124,10 @@ int	ncommands = sizeof( unauth_commands ) / sizeof(unauth_commands[ 0 ] );
     int
 f_quit( SNET *sn, int ac, char *av[], SNET *pushersn )
 {
+    UNUSED(ac);
+    UNUSED(av);
+    UNUSED(pushersn);
+
     snet_writef( sn, "%d Service closing transmission channel\r\n", 221 );
     exit( 0 );
 }
@@ -129,6 +135,10 @@ f_quit( SNET *sn, int ac, char *av[], SNET *pushersn )
     int
 f_noop( SNET *sn, int ac, char *av[], SNET *pushersn )
 {
+    UNUSED(ac);
+    UNUSED(av);
+    UNUSED(pushersn);
+
     snet_writef( sn, "%d cosign v%s\r\n", 250, cosign_version );
     return( 0 );
 }
@@ -136,6 +146,10 @@ f_noop( SNET *sn, int ac, char *av[], SNET *pushersn )
     int
 f_help( SNET *sn, int ac, char *av[], SNET *pushersn )
 {
+    UNUSED(ac);
+    UNUSED(av);
+    UNUSED(pushersn);
+
     snet_writef( sn, "%d Slainte Mhath! http://weblogin.org\r\n", 203 );
     return( 0 );
 }
@@ -143,6 +157,10 @@ f_help( SNET *sn, int ac, char *av[], SNET *pushersn )
     int
 f_notauth( SNET *sn, int ac, char *av[], SNET *pushersn )
 {
+    UNUSED(ac);
+    UNUSED(av);
+    UNUSED(pushersn);
+
     snet_writef( sn, "%d You must call STARTTLS first!\r\n", 550 );
     return( 0 );
 }
@@ -162,6 +180,8 @@ f_starttls( SNET *sn, int ac, char *av[], SNET *pushersn )
     int				rc;
     X509			*peer;
     char			buf[ 1024 ];
+
+    UNUSED(pushersn);
 
     /* STARTTLS with no additional parameters is assumed to be protocol 0 */
     if ( ac >= 2 ) {
@@ -241,6 +261,7 @@ f_login( SNET *sn, int ac, char *av[], SNET *pushersn )
     struct cinfo	ci;
     unsigned int        len, rc;
     extern int		errno;
+    int			snprintf_rc;
 
     /*
      * C: LOGIN login_cookie ip principal factor [factor2]
@@ -276,8 +297,8 @@ f_login( SNET *sn, int ac, char *av[], SNET *pushersn )
 		syslog( LOG_ERR, "f_login: mkcookie error." );
 		return( -1 );
 	    }
-	    if ( snprintf( krbpath, sizeof( krbpath ), "%s/%s",
-		    cosign_tickets, tmpkrb ) >= sizeof( krbpath )) {
+	    snprintf_rc = snprintf( krbpath, sizeof( krbpath ), "%s/%s", cosign_tickets, tmpkrb );
+	    if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( krbpath )) {
 		syslog( LOG_ERR, "f_login: krbpath too long." );
 		return( -1 );
 	    }
@@ -312,9 +333,8 @@ f_login( SNET *sn, int ac, char *av[], SNET *pushersn )
 	return( -1 );
     }
 
-    if ( snprintf( tmppath, sizeof( tmppath ), "%x%x.%i",
-	    (int)tv.tv_sec, (int)tv.tv_usec, (int)getpid()) >=
-	    sizeof( tmppath )) {
+    snprintf_rc = snprintf( tmppath, sizeof( tmppath ), "%x%x.%i", (int)tv.tv_sec, (int)tv.tv_usec, (int)getpid() );
+    if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( tmppath )) {
 	syslog( LOG_ERR, "f_login: tmppath too long" );
 	return( -1 );
     }
@@ -560,6 +580,8 @@ f_daemon( SNET *sn, int ac, char *av[], SNET *pushersn )
 
     char	hostname[ MAXHOSTNAMELEN ];
 
+    UNUSED(pushersn);
+
     if ( al->al_key != CGI ) {
 	syslog( LOG_ERR, "%s is not a daemon", al->al_hostname );
 	snet_writef( sn, "%d DAEMON: %s not a daemon.\r\n",
@@ -603,6 +625,8 @@ f_time( SNET *sn, int ac, char *av[], SNET *pushersn )
     /* 3xx */
     /* login_cookie timestamp state */
     /* . */
+
+    UNUSED(pushersn);
 
     if ( al->al_key != CGI ) {
 	syslog( LOG_ERR, "%s not allowed to tell time", al->al_hostname );
@@ -743,15 +767,15 @@ do_register( char *login, char *login_p, char *scookie_p )
     char		tmppath[ MAXCOOKIELEN ];
     FILE		*tmpfile;
     struct timeval	tv;
+    int			snprintf_rc;
 
     if ( gettimeofday( &tv, NULL ) != 0 ){
 	syslog( LOG_ERR, "do_register: gettimeofday: %m" );
 	return( -1 );
     }
 
-    if ( snprintf( tmppath, sizeof( tmppath ), "%x%x.%i",
-	    (int)tv.tv_sec, (int)tv.tv_usec, (int)getpid()) >=
-	    sizeof( tmppath )) {
+    snprintf_rc = snprintf( tmppath, sizeof( tmppath ), "%x%x.%i", (int)tv.tv_sec, (int)tv.tv_usec, (int)getpid() );
+    if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( tmppath )) {
 	syslog( LOG_ERR, "do_register: tmppath too long" );
 	return( -1 );
     }
@@ -939,7 +963,7 @@ service_valid( char *service )
     }
 
     /* only match whole CNs */
-    if ( svm[ 0 ].rm_so != 0 || svm[ 0 ].rm_eo != strlen( remote_cn )) {
+    if ( svm[ 0 ].rm_so != 0 || svm[ 0 ].rm_eo < 0 || (size_t) svm[ 0 ].rm_eo != strlen( remote_cn )) {
 	syslog( LOG_ERR, "service_valid: CN %s not allowed "
 			 "access to cookie %s (partial match)",
 			 remote_cn, service );
@@ -985,6 +1009,9 @@ f_check( SNET *sn, int ac, char *av[], SNET *pushersn )
     char		*p;
     int			status;
     double		rate;
+    int			snprintf_rc;
+
+    UNUSED(pushersn);
 
     /*
      * C: CHECK servicecookie
@@ -1133,8 +1160,8 @@ f_check( SNET *sn, int ac, char *av[], SNET *pushersn )
 	    return( 1 );
 	}
 	*p = '\0';
-	if ( snprintf( rcookie, sizeof( rcookie ), "%s=%s", av[ 1 ], rekeybuf )
-		>= sizeof( rcookie )) {
+	snprintf_rc = snprintf( rcookie, sizeof( rcookie ), "%s=%s", av[ 1 ], rekeybuf );
+	if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( rcookie )) {
 	    syslog( LOG_ERR, "f_check: rekey: new cookie too long." );
 	    snet_writef( sn, "%d %s rekey failed.\r\n", 536, av[ 0 ] );
 	    return( 1 );
@@ -1263,6 +1290,7 @@ retr_proxy( SNET *sn, char *login, SNET *pushersn )
     char		cbuf[ MAXCOOKIELEN ], spath[ MAXPATHLEN ];
     struct proxies	*proxy;
     int			rc;
+    int			snprintf_rc;
 
     /* S: 241-[cookiename] [hostname to use cookie with]
      * S: 241- ... 
@@ -1282,8 +1310,8 @@ retr_proxy( SNET *sn, char *login, SNET *pushersn )
 	    return( -1 );
 	}
 
-	if ( snprintf( cbuf, sizeof( cbuf ), "%s=%s",
-		proxy->pr_cookie, cookiebuf ) >= sizeof( cbuf )) {
+	snprintf_rc = snprintf( cbuf, sizeof( cbuf ), "%s=%s", proxy->pr_cookie, cookiebuf );
+	if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( cbuf )) {
 	    syslog( LOG_ERR, "retr_proxy: full cookie too long" );
 	    return( -1 );
 	}

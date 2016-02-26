@@ -99,7 +99,8 @@ static struct subfile_list sl[] = {
 loop_checker( int time, int count, char *cookie )
 {
     struct timeval	tv;
-    char       		new_cookie[ 255 ];
+    char		new_cookie[ 255 ];
+    int			snprintf_rc;
 
     if ( gettimeofday( &tv, NULL ) != 0 ) {
 	sl[ SL_TITLE ].sl_data = "Error: Loop Breaker";
@@ -112,8 +113,8 @@ loop_checker( int time, int count, char *cookie )
     if (( tv.tv_sec - time ) > LOOPWINDOW ) {
 	time = tv.tv_sec;
 	count = 1;
-	if ( snprintf( new_cookie, sizeof( new_cookie ),
-		"%s/%d/%d", cookie, time, count) >= sizeof( new_cookie )) {
+	snprintf_rc = snprintf( new_cookie, sizeof( new_cookie ), "%s/%d/%d", cookie, time, count );
+	if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( new_cookie )) {
 	    sl[ SL_TITLE ].sl_data = "Error: Loop Breaker";
 	    sl[ SL_ERROR ].sl_data = "Please try again later.";
 	    subfile( ERROR_HTML, sl, SUBF_OPT_ERROR, 500 );
@@ -128,8 +129,8 @@ loop_checker( int time, int count, char *cookie )
     if ( count >= MAXLOOPCOUNT ) {
 	time = tv.tv_sec;
 	count = 1;
-	if ( snprintf( new_cookie, sizeof( new_cookie ),
-		"%s/%d/%d", cookie, time, count) >= sizeof( new_cookie )) {
+	snprintf_rc = snprintf( new_cookie, sizeof( new_cookie ), "%s/%d/%d", cookie, time, count );
+	if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( new_cookie )) {
 	    sl[ SL_TITLE ].sl_data = "Error: Loop Breaker";
 	    sl[ SL_ERROR ].sl_data = "Please try again later.";
 	    subfile( ERROR_HTML, sl, SUBF_OPT_ERROR, 500 );
@@ -141,8 +142,8 @@ loop_checker( int time, int count, char *cookie )
 
     /* we're still in the limit, increment and keep going */
     count++;
-    if ( snprintf( new_cookie, sizeof( new_cookie ),
-	    "%s/%d/%d", cookie, time, count) >= sizeof( new_cookie )) {
+    snprintf_rc = snprintf( new_cookie, sizeof( new_cookie ), "%s/%d/%d", cookie, time, count );
+    if ( snprintf_rc < 0 || (size_t) snprintf_rc >= sizeof( new_cookie )) {
 	sl[ SL_TITLE ].sl_data = "Error: Loop Breaker";
 	sl[ SL_ERROR ].sl_data = "Please try again later.";
 	subfile( ERROR_HTML, sl, SUBF_OPT_ERROR, 500 );
@@ -271,7 +272,8 @@ main( int argc, char *argv[] )
     int				rc = 0, cookietime = 0, cookiecount = 0;
     int				rebasic = 0, len, server_port;
     int				reauth = 0, scheme = 2;
-    int				i, j;
+    unsigned int		uk;
+    int				j;
     char                	new_cookiebuf[ 128 ];
     char        		new_cookie[ 255 ];
     char			new_scookie[ 255 ];
@@ -585,12 +587,12 @@ main( int argc, char *argv[] )
 	    require = strdup( factor );
 	    for ( r = strtok_r( require, ",", &reqp ); r != NULL;
 		    r = strtok_r( NULL, ",", &reqp )) {
-		for ( i = 0; ui.ui_factors[ i ] != NULL; i++ ) {
-		    if ( match_factor( r, ui.ui_factors[ i ], suffix )) {
+		for ( uk = 0; ui.ui_factors[ uk ] != NULL; uk++ ) {
+		    if ( match_factor( r, ui.ui_factors[ uk ], suffix )) {
 			break;
 		    }
 		}
-		if ( ui.ui_factors[ i ] == NULL ) {
+		if ( ui.ui_factors[ uk ] == NULL ) {
 		    break;
 		}
 	    }
@@ -671,17 +673,17 @@ main( int argc, char *argv[] )
     /* insert factor form fields into cl */
     for ( fl = factorlist; fl != NULL; fl = fl->fl_next ) {
 	for ( ff = fl->fl_formfield; *ff != NULL; ff++ ) {
-	    for ( i = 0; i < ( sizeof( cl ) / sizeof( cl[ 0 ] )) - 1; i++ ) {
-		if ( cl[ i ].cl_key == NULL ) {
-		    cl[ i ].cl_key = *ff;
-		    cl[ i ].cl_type = CGI_TYPE_STRING;
+	    for ( uk = 0; (size_t) uk < ( sizeof( cl ) / sizeof( cl[ 0 ] )) - 1; uk++ ) {
+		if ( cl[ uk ].cl_key == NULL ) {
+		    cl[ uk ].cl_key = *ff;
+		    cl[ uk ].cl_type = CGI_TYPE_STRING;
 		    break;
 		}
-		if ( strcmp( *ff, cl[ i ].cl_key ) == 0 ) {
+		if ( strcmp( *ff, cl[ uk ].cl_key ) == 0 ) {
 		    break;
 		}
 	    }
-	    if ( cl[ i ].cl_key == NULL ) {
+	    if ( cl[ uk ].cl_key == NULL ) {
 		sl[ SL_TITLE ].sl_data = "Error: Server Configuration";
 		sl[ SL_ERROR ].sl_data = "Too many form fields configured.";
 		subfile( ERROR_HTML, sl, SUBF_OPT_ERROR, 500 );
@@ -790,12 +792,12 @@ loggedin:
      */
     for ( fl = factorlist; fl != NULL; fl = fl->fl_next ) {
 	for ( ff = fl->fl_formfield; *ff != NULL; ff++ ) {
-	    for ( i = 0; cl[ i ].cl_key != NULL; i++ ) {
-		if ( strcmp( *ff, cl[ i ].cl_key ) == 0 ) {
+	    for ( uk = 0; cl[ uk ].cl_key != NULL; uk++ ) {
+		if ( strcmp( *ff, cl[ uk ].cl_key ) == 0 ) {
 		    break;
 		}
 	    }
-	    if ( cl[ i ].cl_key == NULL || cl[ i ].cl_data == NULL ) {
+	    if ( cl[ uk ].cl_key == NULL || cl[ uk ].cl_data == NULL ) {
 		break;
 	    }
 	}
@@ -821,13 +823,13 @@ loggedin:
 	    goto loginscreen;
 	}
 
-	for ( i = 0; i < COSIGN_MAXFACTORS - 1; i++ ) {
-	    if ( new_factors[ i ] == NULL ) {
-		new_factors[ i ] = strdup( msg );
-		new_factors[ i + 1 ] = NULL;
+	for ( uk = 0; uk < COSIGN_MAXFACTORS - 1; uk++ ) {
+	    if ( new_factors[ uk ] == NULL ) {
+		new_factors[ uk ] = strdup( msg );
+		new_factors[ uk + 1 ] = NULL;
 		break;
 	    }
-	    if ( strcmp( new_factors[ i ], msg ) == 0 ) {
+	    if ( strcmp( new_factors[ uk ], msg ) == 0 ) {
 		break;
 	    }
 	}
@@ -836,12 +838,12 @@ loggedin:
 	 * Don't call cosign_login() if the factor in question is
 	 * already satisfied.
 	 */
-	for ( i = 0; ui.ui_factors[ i ] != NULL; i++ ) {
-	    if ( strcmp( msg, ui.ui_factors[ i ] ) == 0 ) {
+	for ( uk = 0; ui.ui_factors[ uk ] != NULL; uk++ ) {
+	    if ( strcmp( msg, ui.ui_factors[ uk ] ) == 0 ) {
 		break;
 	    }
 	}
-	if (( ui.ui_factors[ i ] == NULL ) ||
+	if (( ui.ui_factors[ uk ] == NULL ) ||
 		( strcmp( ui.ui_ipaddr, ip_addr ) != 0 )) {
 	    if ( cosign_login( head, cookie, ip_addr, login, msg, NULL ) < 0 ) {
 		sl[ SL_TITLE ].sl_data = "Error: Please try later";
@@ -905,9 +907,9 @@ loggedin:
 	 * required factors have been just satisfied.
 	 */
 	if ( scookie->sl_flag & SL_REAUTH ) {
-	    for ( i = 0; scookie->sl_factors[ i ] != NULL; i++ ) {
+	    for ( uk = 0; scookie->sl_factors[ uk ] != NULL; uk++ ) {
 		for ( j = 0; new_factors[ j ] != NULL; j++ ) {
-		    if ( match_factor( scookie->sl_factors[ i ],
+		    if ( match_factor( scookie->sl_factors[ uk ],
 			    new_factors[ j ], suffix )) {
 			break;
 		    }

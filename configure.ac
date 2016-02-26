@@ -123,7 +123,7 @@ AC_CHECK_FUNCS([dup2 gethostbyname gethostname gettimeofday inet_ntoa memmove me
 
 # Misc.
 if test x_$GCC = x_yes; then
-    OPTOPTS=${OPTOPTS:-"-Wall -Wmissing-prototypes"}
+    OPTOPTS=${OPTOPTS:-"-Wall -Wextra -Wmissing-prototypes"}
 fi
 CHECK_UNIVERSAL_BINARIES
 AC_SUBST(FILTER_LINKER_OPTS)

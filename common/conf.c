@@ -118,7 +118,8 @@ service_find( char *cookie, regmatch_t matches[], int nmatch )
 	if (( rc = regexec( &preg, cookie, nmatch, matches, 0 )) == 0 ) {
 	    /* only match whole service names */
 	    if ( matches[ 0 ].rm_so == 0 &&
-		    matches[ 0 ].rm_eo == strlen( cookie )) {
+		    matches[ 0 ].rm_eo >= 0 &&
+		    (size_t) matches[ 0 ].rm_eo == strlen( cookie )) {
 		regfree( &preg );
 		break;
 	    }
@@ -153,7 +154,8 @@ authlist_find( char *hostname )
 
 	if (( rc = regexec( &preg, hostname, 1, matches, 0 )) == 0 ) {
 	    if ( matches[ 0 ].rm_so == 0 &&
-			matches[ 0 ].rm_eo == strlen( hostname )) {
+			matches[ 0 ].rm_eo >= 0 &&
+			(size_t) matches[ 0 ].rm_eo == strlen( hostname )) {
 		regfree( &preg );
 		break;
 	    }
@@ -247,7 +249,8 @@ matchlist_process(struct matchlist *ml, char *userstring, char **l, char **r )
 
     if (( rc = regexec( &preg, userstring, 3, matches, 0 )) == 0 ) {
 	if ( matches[ 0 ].rm_so != 0 ||
-		matches[ 0].rm_eo != strlen( userstring )) {
+		matches[ 0].rm_eo < 0 ||
+		(size_t) matches[ 0].rm_eo != strlen( userstring )) {
 	    return ( -1 );
 	}
 
@@ -448,6 +451,7 @@ read_config( char *path )
     int			ac, i, j;
     int			linenum = 0;
     int			insert = 1;
+    unsigned int	ui;
     struct cosigncfg	*cc_new, **cc_cur;
     struct authlist 	*al_new, **al_cur;
     struct servicelist	*sl_new, **sl_cur;
@@ -492,8 +496,8 @@ read_config( char *path )
 		return( -1 );
 	    }
 
-	    for ( i = 0; i < cc_new->cc_numval; i++ ) {
-		cc_new->cc_value[ i ] = strdup( av[ i + 2 ] );
+	    for ( ui = 0; ui < cc_new->cc_numval; ui++ ) {
+		cc_new->cc_value[ ui ] = strdup( av[ ui + 2 ] );
 
 	    }
 	    for ( cc_cur = &new_cfg; (*cc_cur) != NULL;

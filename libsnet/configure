@@ -14900,7 +14900,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Miscellaneous:
 if test x_$GCC = x_yes; then
-    OPTOPTS=${OPTOPTS:-"-Wall -Wmissing-prototypes"}
+    OPTOPTS=${OPTOPTS:-"-Wall -Wextra -Wmissing-prototypes"}
 fi
 
 

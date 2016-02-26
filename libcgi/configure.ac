@@ -19,6 +19,11 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memchr memmove memset strcasecmp strchr strdup strerror strncasecmp strstr strtol])
 
 CHECK_UNIVERSAL_BINARIES
+
+# Miscellaneous:
+if test x_$GCC = x_yes; then
+    OPTOPTS=${OPTOPTS:-"-Wall -Wextra -Wmissing-prototypes"}
+fi
 AC_SUBST(OPTOPTS)
 
 AC_CONFIG_FILES(Makefile)

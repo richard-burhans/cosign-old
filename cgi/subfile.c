@@ -16,10 +16,11 @@
     void
 subfile( char *filename, struct subfile_list *sl, int opts, ... )
 {
-    FILE	*fs;
-    int 	c, i, j;
-    char	nasties[] = "<>(){}[]'`\" \\";
-    va_list	vl;
+    FILE		*fs;
+    int			c, i;
+    unsigned int	uj;
+    char		nasties[] = "<>(){}[]'`\" \\";
+    va_list		vl;
 
     /*
      * close stdin to avoid "ap_content_length_filter: apr_bucket_read()"
@@ -94,14 +95,14 @@ subfile( char *filename, struct subfile_list *sl, int opts, ... )
 		} else if ( sl[ i ].sl_type == SUBF_STR_ESC ) {
 
 		    /* block XSS attacks while printing */
-                    for ( j = 0; j < strlen( sl[ i ].sl_data ); j++ ) {
-                        if ( strchr( nasties, sl[ i ].sl_data[ j ] ) != NULL ||
-                                sl[ i ].sl_data[ j ] <= 0x1F ||
-				sl[ i ].sl_data[ j ] >= 0x7F ) {
+                    for ( uj = 0; (size_t) uj < strlen( sl[ i ].sl_data ); uj++ ) {
+                        if ( strchr( nasties, sl[ i ].sl_data[ uj ] ) != NULL ||
+                                sl[ i ].sl_data[ uj ] <= 0x1F ||
+				sl[ i ].sl_data[ uj ] >= 0x7F ) {
 
-			    printf( "%%%x", sl[ i ].sl_data[ j ] );
+			    printf( "%%%x", sl[ i ].sl_data[ uj ] );
                         } else {
-                            putc( sl[ i ].sl_data[ j ], stdout );
+                            putc( sl[ i ].sl_data[ uj ], stdout );
                         }
 		    }
 		}

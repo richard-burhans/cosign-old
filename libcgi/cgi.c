@@ -397,7 +397,7 @@ error2:
     int
 cgi_multipart( CGIHANDLE *cgi, struct cgi_list cl[], char *dir, struct function *func )
 {
-    char 	*line, *filename, *filetype, *ptr;
+    char 	*line = NULL, *filename = NULL, *filetype, *ptr;
     char	*request_method;
     char	key[CGI_LINLEN];
     char	boundary[CGI_LINLEN];
@@ -519,7 +519,7 @@ DEBUG( fprintf( stderr, "DB key is %s\n", key ));
 	if ( cl[i].cl_type == CGI_TYPE_FILE ) {
 	    strtok( filename, "\"" );
 	    filename = strtok( NULL, "\"" );
-	    if( filename == "" || filename == NULL ) {
+	    if( filename == NULL || *filename == '\0' ) {
 		// skip to boundary
 		while (( rc = mp_read( cgi, junkbuf, CGI_BUFLEN, boundary ))) {
 		    if( rc  <  0 ) {
@@ -558,6 +558,9 @@ DEBUG( fprintf( stderr, "DB key is %s\n", key ));
 	    upfile->cf_status = NULL;
 
 	    if (( upfile->cf_tmp = malloc((strlen(dir)) + (strlen(upfile->cf_name)) + 2 )) == NULL ) {
+		CGI_SYSERR( cgi, "malloc" );
+		CGI_LOGERR( cgi );
+		return( -1 );
 	    }
 	    sprintf( upfile->cf_tmp, "%s/%s", dir, upfile->cf_name );
 
@@ -565,6 +568,11 @@ DEBUG( fprintf( stderr, "DB key is %s\n", key ));
 	    if ( cl[i].cl_data == NULL ) {
 		cl[i].cl_data = upfile;
 	    } else {
+		/* My best guess is to add to end of list */
+		cur_upfile = (struct cgi_file *) cl[i].cl_data;
+		while (cur_upfile->cf_next != NULL) {
+		    cur_upfile = cur_upfile->cf_next;
+		}
 		cur_upfile->cf_next = upfile;
 	    }
 	    cur_upfile = upfile;
