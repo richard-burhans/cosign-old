@@ -249,7 +249,7 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
     krb5_context                kcontext;
     krb5_principal              kprinc;
     krb5_principal              sprinc;
-    krb5_get_init_creds_opt     kopts;
+    krb5_get_init_creds_opt     *kopts = NULL;
     krb5_verify_init_creds_opt 	kvic_opts[ 1 ];
     krb5_creds                  kcreds;
     krb5_ccache                 kccache;
@@ -311,29 +311,49 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
 	}
     }
 
-    krb5_get_init_creds_opt_init( &kopts );
-    krb5_get_init_creds_opt_set_tkt_life( &kopts, tkt_life );
-    krb5_get_init_creds_opt_set_renew_life( &kopts, 0 );
-    krb5_get_init_creds_opt_set_forwardable( &kopts, 1 );
-    krb5_get_init_creds_opt_set_proxiable( &kopts, 0 );
-
-    if (( kerror = krb5_get_init_creds_password( kcontext, &kcreds, 
-	    kprinc, passwd, NULL, NULL, 0, NULL /*keytab */, &kopts ))) {
-
-	if (( kerror == KRB5KRB_AP_ERR_BAD_INTEGRITY ) ||
-		( kerror == KRB5KDC_ERR_PREAUTH_FAILED ) ||
-		( kerror == KRB5KDC_ERR_C_PRINCIPAL_UNKNOWN )) {
-	    return( COSIGN_CGI_ERROR );	/* draw login or reauth page */
-        } else if ( kerror == KRB5KDC_ERR_KEY_EXP ) {
-	    *msg = (char *)krb5_get_error_message( kcontext, kerror );
-            return( COSIGN_CGI_PASSWORD_EXPIRED );
-	} else {
-	    sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
-	    sl[ SL_TITLE ].sl_data = "Error";
-	    subfile( tmpl, sl, 0 );
-	    exit( 0 );
-	}
+    if (( kerror = krb5_get_init_creds_opt_alloc( kcontext, &kopts )) != 0 ) {
+        sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
+        sl[ SL_TITLE ].sl_data = "Authentication Required (kerberos error)";
+        subfile( tmpl, sl, 0 );
+        exit( 0 );
     }
+
+    krb5_get_init_creds_opt_set_tkt_life( kopts, tkt_life );
+    krb5_get_init_creds_opt_set_renew_life( kopts, 0 );
+    krb5_get_init_creds_opt_set_forwardable( kopts, 1 );
+    krb5_get_init_creds_opt_set_proxiable( kopts, 0 );
+
+    if (( kerror = krb5_get_init_creds_password( kcontext, &kcreds,
+            kprinc, passwd, NULL, NULL, 0, NULL /*keytab */, kopts ))) {
+
+        if (( kerror == KRB5KRB_AP_ERR_BAD_INTEGRITY ) ||
+                ( kerror == KRB5KDC_ERR_PREAUTH_FAILED ) ||
+                ( kerror == KRB5KDC_ERR_C_PRINCIPAL_UNKNOWN ) ||
+                ( kerror == KRB5KDC_ERR_KEY_EXP )) {
+
+            if ( kerror == KRB5KDC_ERR_KEY_EXP ) {
+                *msg = (char *)krb5_get_error_message( kcontext, kerror );
+            }
+
+            krb5_free_cred_contents( kcontext, &kcreds );
+            krb5_get_init_creds_opt_free( kcontext, kopts );
+            krb5_free_principal( kcontext, kprinc );
+            krb5_free_context( kcontext );
+
+            if ( kerror == KRB5KDC_ERR_KEY_EXP ) {
+                return( COSIGN_CGI_PASSWORD_EXPIRED );
+            }
+
+            return( COSIGN_CGI_ERROR ); /* draw login or reauth page */
+        }
+
+        sl[ SL_ERROR ].sl_data = (char *)krb5_get_error_message( kcontext, kerror );
+        sl[ SL_TITLE ].sl_data = "Error";
+        subfile( tmpl, sl, 0 );
+        exit( 0 );
+    }
+
+    krb5_get_init_creds_opt_free( kcontext, kopts );
 
     /* verify no KDC spoofing */
     if ( *keytab_path != '\0' ) {
@@ -400,7 +420,10 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
     }
 
     if ( sp->sp_reauth && sp->sp_ipchanged == 0 ) {
-	return( COSIGN_CGI_OK );
+        krb5_free_cred_contents( kcontext, &kcreds );
+        krb5_free_principal( kcontext, kprinc );
+        krb5_free_context( kcontext );
+        return( COSIGN_CGI_OK );
     }
 
     if ( store_tickets ) {
