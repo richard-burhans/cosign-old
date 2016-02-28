@@ -1,7 +1,8 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 SBINDIR=@sbindir@
-CGIDIR  = @prefix@/cgi-ssl
+CGIROOT  = @cgiroot@
+CGIDIR  = ${CGIROOT}/cgi-ssl
 HTMLDIR  = @prefix@/html
 COSIGNCADIR=@cosigncadir@
 COSIGNCERT=@cosigncert@

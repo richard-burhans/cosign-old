@@ -39,6 +39,9 @@ AC_ARG_VAR([GSSAPI_CFLAGS], [GSSAPI CFLAGS])
 AC_ARG_VAR([GSSAPI_LDFLAGS], [GSSAPI LDFLAGS])
 AC_ARG_VAR([GSSAPI_LIBS], [GSSAPI LIBS])
 
+AC_ARG_WITH(cgiroot, AS_HELP_STRING([--with-cgiroot=DIR],[default cosign cgi root directory]), cgiroot="$withval", cgiroot="$prefix" )
+ AC_SUBST(cgiroot)
+
 AC_ARG_WITH(cosigndb, AS_HELP_STRING([--with-cosigndb=DIR],[default cosign database storage]), cosigndb="$withval", cosigndb="/var/cosign/daemon" )
 AC_SUBST(cosigndb)
 

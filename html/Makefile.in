@@ -2,9 +2,10 @@ TEMPLATES = error.html expired_error.html login.html login_error.html verify-log
 HTML = cosign_base.css cosign_js.css post_error.html looping.html
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-TMPLDIR  = @prefix@/templates
-HTMLDIR  = @prefix@/html
-SERVICESDIR  = @prefix@/services
+CGIROOT  = @cgiroot@
+TMPLDIR  = ${CGIROOT}/templates
+HTMLDIR  = ${CGIROOT}/html
+SERVICESDIR  = ${CGIROOT}/services
 INSTALL	=	@INSTALL@
 
 all: ${TEMPLATES}
