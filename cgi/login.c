@@ -324,6 +324,9 @@ cosign_login_krb5( struct connlist *head, char *cosignname, char *id,
     krb5_get_init_creds_opt_set_forwardable( kopts, 1 );
     krb5_get_init_creds_opt_set_proxiable( kopts, 0 );
 
+    /* ensure krb5_free_cred_contents() will succeed */
+    memset(&kcreds, 0, sizeof(kcreds));
+
     if (( kerror = krb5_get_init_creds_password( kcontext, &kcreds,
             kprinc, passwd, NULL, NULL, 0, NULL /*keytab */, kopts ))) {
 
