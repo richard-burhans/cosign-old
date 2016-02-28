@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "undef_package.h"
 
 #include <sys/types.h>
 #include <sys/time.h>

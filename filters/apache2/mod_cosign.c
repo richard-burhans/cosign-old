@@ -3,6 +3,7 @@
  */ 
 
 #include "config.h"
+#include "undef_package.h"
 
 #include <httpd.h>
 #include <http_config.h>

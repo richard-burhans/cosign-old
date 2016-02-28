@@ -1,0 +1,24 @@
+#ifndef _UNDEF_PACKAGE_H_
+#define _UNDEF_PACKAGE_H_
+
+#ifdef PACKAGE_BUGREPORT
+#undef PACKAGE_BUGREPORT
+#endif /* PACKAGE_BUGREPORT */
+
+#ifdef PACKAGE_NAME
+#undef PACKAGE_NAME
+#endif /* PACKAGE_NAME */
+
+#ifdef PACKAGE_STRING
+#undef PACKAGE_STRING
+#endif /*PACKAGE_STRING */
+
+#ifdef PACKAGE_TARNAME
+#undef PACKAGE_TARNAME
+#endif /* PACKAGE_TARNAME */
+
+#ifdef PACKAGE_VERSION
+#undef PACKAGE_VERSION
+#endif /* PACKAGE_VERSION */
+
+#endif /* _UNDEF_PACAKGE_H_ */
