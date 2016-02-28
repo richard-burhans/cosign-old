@@ -314,16 +314,26 @@ modifier:
 		    *dbufoff = '-';				\
 		}
 
+#define SNET_WF_U(x)						\
+                is_negative = 0;				\
+		do {						\
+		    if ( --dbufoff < dbuf ) {			\
+			abort();				\
+		    }						\
+		    *dbufoff = '0' + ( (x) % 10 );		\
+		    (x) /= 10;					\
+		} while ( (x) )
+
 		if ( is_unsigned ) {
 		    if ( is_longlong ) {
 			u_ll = va_arg( vl, unsigned long long );
-			SNET_WF_D( u_ll );
+			SNET_WF_U( u_ll );
 		    } else if ( is_long ) {
 			u_l = va_arg( vl, unsigned long );
-			SNET_WF_D( u_l );
+			SNET_WF_U( u_l );
 		    } else {
 			u_d = va_arg( vl, unsigned int );
-			SNET_WF_D( u_d );
+			SNET_WF_U( u_d );
 		    }
 		} else {
 		    if ( is_longlong ) {
